@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.3</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>org.example</groupId>
+    <artifactId>ControlBackendbf</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>ControlBackendbf</name>
+    <description>ControlBackendbf</description>
+    <url/>
+    <licenses>
+        <license/>
+    </licenses>
+    <developers>
+        <developer/>
+    </developers>
+    <scm>
+        <connection/>
+        <developerConnection/>
+        <tag/>
+        <url/>
+    </scm>
+    <properties>
+        <java.version>21</java.version>
+        <!-- Standard: lokal (Backend läuft auf 8082) -->
+        <openapi.url>http://localhost:8082/v3/api-docs</openapi.url>
+        <openapi.output.dir>${project.build.directory}</openapi.output.dir>
+        <openapi.output.file>openapi.yaml</openapi.output.file>
+        <!-- Wohin der TS-Client generiert werden soll: -->
+        <ts.client.output>${project.basedir}/generated/ts-client</ts.client.output>
+        <openapi.generator.version>7.8.0</openapi.generator.version>
+
+        <openapi.spec.file>${project.basedir}/src/main/openapi/openapi.yaml</openapi.spec.file>
+
+        <!-- Pakete/Orte für generierten Servercode -->
+        <openapi.server.output>${project.build.directory}/generated-sources/openapi</openapi.server.output>
+        <openapi.api.package>org.example.controlbackendbf.api</openapi.api.package>
+        <openapi.model.package>org.example.controlbackendbf.api.model</openapi.model.package>
+        <springdoc.maven.plugin.version>1.8</springdoc.maven.plugin.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Tests -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- OpenAPI / Swagger UI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
+        <!-- Optional: MapStruct + Processor (nur wenn du Mapper nutzt) -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.6.0.Beta1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.6.0.Beta1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Validation (für @Valid, etc.) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Security / OAuth2 (falls genutzt) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.28.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- JPA + Hibernate + jakarta.persistence.* -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+<!--            <plugin>-->
+<!--                <groupId>org.openapitools</groupId>-->
+<!--                <artifactId>openapi-generator-maven-plugin</artifactId>-->
+<!--                <version>7.8.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>generate-ts-client</id>-->
+<!--                        <goals><goal>generate</goal></goals>-->
+<!--                        <configuration>-->
+<!--                            &lt;!&ndash; Wenn Backend lokal läuft &ndash;&gt;-->
+<!--                            <inputSpec>http://localhost:8082/v3/api-docs</inputSpec>-->
+<!--&lt;!&ndash;                            <inputSpec>${openapi.output.dir}/${openapi.output.file}</inputSpec>&ndash;&gt;-->
+<!--                            <generatorName>typescript-angular</generatorName>-->
+<!--&lt;!&ndash;                            <output>${ts.client.output}</output>&ndash;&gt;-->
+<!--                            <output>${project.basedir}/generated/ts-client</output>-->
+<!--                            <configOptions>-->
+<!--                                <ngVersion>17</ngVersion>-->
+<!--                                <stringEnums>true</stringEnums>-->
+<!--                                <modelPropertyNaming>camelCase</modelPropertyNaming>-->
+<!--                                <supportsES6>true</supportsES6>-->
+<!--                            </configOptions>-->
+<!--                            <additionalProperties>-->
+<!--                                npmName=@your-scope/control-api-->
+<!--                                npmVersion=0.1.0-->
+<!--                            </additionalProperties>-->
+<!--                            <globalProperties>-->
+<!--                                <models/>-->
+<!--                                <apis/>-->
+<!--                            </globalProperties>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>7.8.0</version>
+                <executions>
+
+                    <!-- Java-Server: Interfaces + Modelle (keine fertigen Controller) -->
+                    <execution>
+                        <id>generate-java-server</id>
+                        <goals><goal>generate</goal></goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <inputSpec>${openapi.spec.file}</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <output>${openapi.server.output}</output>
+                            <apiPackage>${openapi.api.package}</apiPackage>
+                            <modelPackage>${openapi.model.package}</modelPackage>
+                            <configOptions>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <interfaceOnly>true</interfaceOnly>        <!-- nur Interfaces, du implementierst -->
+                                <useTags>true</useTags>                     <!-- nach Tags gruppieren -->
+                                <dateLibrary>java8</dateLibrary>
+                                <serializableModel>true</serializableModel>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- TypeScript-Client (Angular) -->
+                    <execution>
+                        <id>generate-ts-client</id>
+                        <goals><goal>generate</goal></goals>
+                        <phase>verify</phase>
+                        <configuration>
+                            <inputSpec>${openapi.spec.file}</inputSpec>
+                            <generatorName>typescript-angular</generatorName>
+                            <output>${ts.client.output}</output>
+                            <configOptions>
+                                <ngVersion>17</ngVersion>
+                                <stringEnums>true</stringEnums>
+                                <modelPropertyNaming>camelCase</modelPropertyNaming>
+                                <supportsES6>true</supportsES6>
+                            </configOptions>
+                            <globalProperties>
+                                <models/>
+                                <apis/>
+                            </globalProperties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>add-openapi-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration>
+                            <sources>
+                                <source>${openapi.server.output}/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+
+<!--    <profiles>-->
+<!--        &lt;!&ndash; lokal: App läuft auf 8082 &ndash;&gt;-->
+<!--        <profile>-->
+<!--            <id>openapi-gen-local</id>-->
+<!--            <properties>-->
+<!--                <openapi.url>http://localhost:8082/v3/api-docs</openapi.url>-->
+<!--                <ts.client.output>${project.basedir}/generated/ts-client</ts.client.output>-->
+<!--            </properties>-->
+<!--            <build>-->
+<!--                <plugins>-->
+<!--                    <plugin>-->
+<!--                        <groupId>org.openapitools</groupId>-->
+<!--                        <artifactId>openapi-generator-maven-plugin</artifactId>-->
+<!--                        <version>7.8.0</version>-->
+<!--                        <executions>-->
+
+<!--                            &lt;!&ndash; Java-Server: Interfaces + Modelle (keine fertigen Controller) &ndash;&gt;-->
+<!--                            <execution>-->
+<!--                                <id>generate-java-server</id>-->
+<!--                                <goals><goal>generate</goal></goals>-->
+<!--                                <phase>generate-sources</phase>-->
+<!--                                <configuration>-->
+<!--                                    <inputSpec>${openapi.spec.file}</inputSpec>-->
+<!--                                    <generatorName>spring</generatorName>-->
+<!--                                    <output>${openapi.server.output}</output>-->
+<!--                                    <apiPackage>${openapi.api.package}</apiPackage>-->
+<!--                                    <modelPackage>${openapi.model.package}</modelPackage>-->
+<!--                                    <configOptions>-->
+<!--                                        <useSpringBoot3>true</useSpringBoot3>-->
+<!--                                        <interfaceOnly>true</interfaceOnly>        &lt;!&ndash; nur Interfaces, du implementierst &ndash;&gt;-->
+<!--                                        <useTags>true</useTags>                     &lt;!&ndash; nach Tags gruppieren &ndash;&gt;-->
+<!--                                        <dateLibrary>java8</dateLibrary>-->
+<!--                                        <serializableModel>true</serializableModel>-->
+<!--                                    </configOptions>-->
+<!--                                </configuration>-->
+<!--                            </execution>-->
+
+<!--                            &lt;!&ndash; TypeScript-Client (Angular) &ndash;&gt;-->
+<!--                            <execution>-->
+<!--                                <id>generate-ts-client</id>-->
+<!--                                <goals><goal>generate</goal></goals>-->
+<!--                                <phase>verify</phase>-->
+<!--                                <configuration>-->
+<!--                                    <inputSpec>${openapi.spec.file}</inputSpec>-->
+<!--                                    <generatorName>typescript-angular</generatorName>-->
+<!--                                    <output>${ts.client.output}</output>-->
+<!--                                    <configOptions>-->
+<!--                                        <ngVersion>17</ngVersion>-->
+<!--                                        <stringEnums>true</stringEnums>-->
+<!--                                        <modelPropertyNaming>camelCase</modelPropertyNaming>-->
+<!--                                        <supportsES6>true</supportsES6>-->
+<!--                                    </configOptions>-->
+<!--                                    <globalProperties>-->
+<!--                                        <models/>-->
+<!--                                        <apis/>-->
+<!--                                    </globalProperties>-->
+<!--                                </configuration>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
+<!--                </plugins>-->
+<!--            </build>-->
+<!--        </profile>-->
+
+<!--        &lt;!&ndash; docker: App auf 8080 &ndash;&gt;-->
+<!--        <profile>-->
+<!--            <id>openapi-gen-docker</id>-->
+<!--            <properties>-->
+<!--                <openapi.url>http://localhost:8080/v3/api-docs</openapi.url>-->
+<!--                <ts.client.output>${project.basedir}/generated/ts-client</ts.client.output>-->
+<!--            </properties>-->
+<!--            <build>-->
+<!--                <plugins>-->
+<!--                    <plugin>-->
+<!--                        <groupId>org.openapitools</groupId>-->
+<!--                        <artifactId>openapi-generator-maven-plugin</artifactId>-->
+<!--                        <version>7.8.0</version>-->
+<!--                        <executions>-->
+
+<!--                            &lt;!&ndash; Java-Server: Interfaces + Modelle (keine fertigen Controller) &ndash;&gt;-->
+<!--                            <execution>-->
+<!--                                <id>generate-java-server</id>-->
+<!--                                <goals><goal>generate</goal></goals>-->
+<!--                                <phase>generate-sources</phase>-->
+<!--                                <configuration>-->
+<!--                                    <inputSpec>${openapi.spec.file}</inputSpec>-->
+<!--                                    <generatorName>spring</generatorName>-->
+<!--                                    <output>${openapi.server.output}</output>-->
+<!--                                    <apiPackage>${openapi.api.package}</apiPackage>-->
+<!--                                    <modelPackage>${openapi.model.package}</modelPackage>-->
+<!--                                    <configOptions>-->
+<!--                                        <useSpringBoot3>true</useSpringBoot3>-->
+<!--                                        <interfaceOnly>true</interfaceOnly>        &lt;!&ndash; nur Interfaces, du implementierst &ndash;&gt;-->
+<!--                                        <useTags>true</useTags>                     &lt;!&ndash; nach Tags gruppieren &ndash;&gt;-->
+<!--                                        <dateLibrary>java8</dateLibrary>-->
+<!--                                        <serializableModel>true</serializableModel>-->
+<!--                                    </configOptions>-->
+<!--                                </configuration>-->
+<!--                            </execution>-->
+
+<!--                            &lt;!&ndash; TypeScript-Client (Angular) &ndash;&gt;-->
+<!--                            <execution>-->
+<!--                                <id>generate-ts-client</id>-->
+<!--                                <goals><goal>generate</goal></goals>-->
+<!--                                <phase>verify</phase>-->
+<!--                                <configuration>-->
+<!--                                    <inputSpec>${openapi.spec.file}</inputSpec>-->
+<!--                                    <generatorName>typescript-angular</generatorName>-->
+<!--                                    <output>${ts.client.output}</output>-->
+<!--                                    <configOptions>-->
+<!--                                        <ngVersion>17</ngVersion>-->
+<!--                                        <stringEnums>true</stringEnums>-->
+<!--                                        <modelPropertyNaming>camelCase</modelPropertyNaming>-->
+<!--                                        <supportsES6>true</supportsES6>-->
+<!--                                    </configOptions>-->
+<!--                                    <globalProperties>-->
+<!--                                        <models/>-->
+<!--                                        <apis/>-->
+<!--                                    </globalProperties>-->
+<!--                                </configuration>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
+<!--                </plugins>-->
+<!--            </build>-->
+<!--        </profile>-->
+<!--    </profiles>-->
+
+</project>

@@ -1,0 +1,4 @@
+spring:
+  application:
+  name: ControlBackendbf
+# driver-class-name: org.postgresql.Driver   # optional, wird meist automatisch erkannt

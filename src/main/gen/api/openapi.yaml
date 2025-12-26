@@ -1,0 +1,102 @@
+openapi: 3.0.3
+info:
+  title: Control API
+  version: 1.0.0
+servers:
+- description: Local Dev
+  url: http://localhost:8082
+- description: Docker
+  url: http://localhost:8080
+paths:
+  /api/users:
+    get:
+      operationId: listUsers
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/User'
+                type: array
+          description: OK
+      summary: Liste aller User
+      tags:
+      - User
+      x-accepts:
+      - application/json
+    post:
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Erstellt
+      summary: User anlegen
+      tags:
+      - User
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /api/users/{id}:
+    get:
+      operationId: getUserById
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: OK
+        "404":
+          description: Nicht gefunden
+      summary: User per ID
+      tags:
+      - User
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    User:
+      example:
+        name: Alice
+        id: 42
+      properties:
+        id:
+          example: 42
+          format: int64
+          type: integer
+        name:
+          example: Alice
+          type: string
+      required:
+      - id
+      - name
+      type: object
+    CreateUserRequest:
+      example:
+        name: name
+      properties:
+        name:
+          type: string
+      required:
+      - name
+      type: object
+

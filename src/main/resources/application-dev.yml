@@ -1,0 +1,18 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: wlyameogo
+    password: ${DB_PASSWORD}
+
+
+  jpa:
+    hibernate:
+      ddl-auto: none           # wir lassen Liquibase die Struktur anlegen
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
