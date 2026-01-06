@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Build + Tests
+        run: mvn -B verify
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/target/surefire-reports/**
+            **/target/failsafe-reports/**
+
+  codeql:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Build (required for Java analysis)
+        run: mvn -B -DskipTests=true package
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  security-scans:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare reports dir
+        run: mkdir -p reports
+
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
+        with:
+          args: detect --source . --report-format sarif --report-path reports/gitleaks.sarif
+
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.24.0
+        continue-on-error: true
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: reports/trivy-fs.sarif
+
+      - name: Dependency-Check (Docker)
+        continue-on-error: true
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/src" -v "${{ github.workspace }}/reports:/report" \
+            owasp/dependency-check:latest --scan /src --format "ALL" --out /report
+
+      - name: Upload security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: reports/**
