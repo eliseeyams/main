@@ -3,8 +3,8 @@ spring:
     name: ControlBackendbf
   datasource:
     url: jdbc:postgresql://${DB_HOST:db}:${DB_PORT:5432}/${DB_NAME:app_db}
-    username: ${DB_USER:wlyameogo}
-    password: ${DB_PASSWORD:1234}
+    username: ${DB_USER:app_user}
+    password: ${DB_PASSWORD:app_password}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
