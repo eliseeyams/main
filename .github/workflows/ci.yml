@@ -3,11 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - main
-      - "feature/**"
-      - "bugfix/**"
+      - "**"
   pull_request:
-    branches: [ "main" ]
+    branches:
+        - "**"
   schedule:
     - cron: "0 6 * * 1" # Mondays 06:00 UTC
 
