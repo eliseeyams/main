@@ -1,7 +1,16 @@
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:app_db}
+#    username: ${DB_USER:app_user01}
+#    password: ${DB_PASSWORD:app_password}
+#  liquibase:
+#    enabled: true
 spring:
-  datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:app_db}
-    username: ${DB_USER:app_user}
-    password: ${DB_PASSWORD:app_password}
   liquibase:
     enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
