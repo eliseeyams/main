@@ -11,4 +11,5 @@
 
     <include file="db/changelog/001-create-core-schema.xml"/>
     <include file="db/changelog/002-create-userId-userName-columns.xml"/>
+    <include file="db/changelog/003-add-email-column.xml"/>
 </databaseChangeLog>

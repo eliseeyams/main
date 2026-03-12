@@ -2,9 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - "**"
   pull_request:
-    branches: [ "main" ]
+    branches:
+        - "**"
   schedule:
     - cron: "0 6 * * 1" # Mondays 06:00 UTC
 
@@ -14,6 +16,23 @@ permissions:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+
+    # ✅ HIER NEU: Postgres als Service für Tests
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: ${{ vars.DB_NAME }}
+          POSTGRES_USER: ${{ vars.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U ${{ vars.DB_USER }} -d ${{ vars.DB_NAME }}"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=20
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,7 +44,25 @@ jobs:
           java-version: "21"
           cache: maven
 
+      # ✅ OPTIONAL aber hilfreich: warten bis DB wirklich ready ist
+      - name: Wait for Postgres
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U "${{ vars.DB_USER }}" -d "${{ vars.DB_NAME }}" && exit 0
+            sleep 2
+          done
+          echo "Postgres did not become ready in time" >&2
+          exit 1
+
       - name: Build + Tests
+        # ✅ HIER NEU: Env für Spring (damit Liquibase/DB Connect klappt)
+        env:
+          SPRING_PROFILES_ACTIVE: test
+          DB_HOST: localhost
+          DB_PORT: "5432"
+          DB_NAME: ${{ vars.DB_NAME }}
+          DB_USER: ${{ vars.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: mvn -B verify
 
       - name: Upload test reports

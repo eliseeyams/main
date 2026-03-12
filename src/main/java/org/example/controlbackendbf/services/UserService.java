@@ -10,8 +10,11 @@ import org.example.controlbackendbf.api.model.CreateUserRequest;
 import org.example.controlbackendbf.api.model.User;
 import org.example.controlbackendbf.entities.UserEntity;
 import org.example.controlbackendbf.repositories.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.lang.module.ResolutionException;
 import java.util.List;
 
 @Service
@@ -23,6 +26,20 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User create(CreateUserRequest body){
+
+        if(userRepository.existsByUsername(body.getName())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
+        }
+
+        String email = body.getEmail();
+        if(email == null || email.isBlank() || !email.contains("@")){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email cannot be empty");
+        }
+
+        if(userRepository.existsByEmail(email)){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+        }
+
         var e = new UserEntity();
             e.setUsername(body.getName());
             userRepository.save(e);
