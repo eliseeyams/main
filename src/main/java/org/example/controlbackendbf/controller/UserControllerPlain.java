@@ -32,7 +32,6 @@ public class UserControllerPlain implements UserApi {
     @Override
     public ResponseEntity<User> createUser(CreateUserRequest body) {
         User created = userService.create(body);
-
             return ResponseEntity.created(URI.create("/users/"+created.getId())).body(created);
     }
 

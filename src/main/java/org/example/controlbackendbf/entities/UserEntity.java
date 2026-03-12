@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "users", schema = "core") // oder default_schema setzen, s.u.
+@Table(name = "users", schema = "core", uniqueConstraints = {@UniqueConstraint(columnNames = "username")}) // oder default_schema setzen, s.u.
 //@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
@@ -17,4 +17,7 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String username;
+
+    @Column(nullable = false, unique = true)
+    private String email;
 }
