@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ÜBUNG 1: Hallo Welt Prozess
+  ============================
+  Dieser einfache Prozess besteht aus:
+  - Start Event
+  - Service Task (ruft deine Java-Klasse auf)
+  - End Event
+
+  Datei speichern unter: src/main/resources/processes/hallo-welt.bpmn
+  Camunda deployed sie automatisch beim Start (auto-deployment-enabled: true)
+-->
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             id="Definitions_HalloWelt"
+             targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <process id="hallo-welt-prozess" name="Hallo Welt Prozess" isExecutable="true">
+
+    <!-- START EVENT -->
+    <startEvent id="StartEvent_1" name="Prozess gestartet">
+      <outgoing>Flow_1</outgoing>
+    </startEvent>
+
+    <!-- SERVICE TASK: ruft HalloWeltDelegate.java auf -->
+    <serviceTask id="Task_HalloWelt"
+                 name="Hallo Welt ausgeben"
+                 camunda:delegateExpression="${halloWeltDelegate}">
+      <incoming>Flow_1</incoming>
+      <outgoing>Flow_2</outgoing>
+    </serviceTask>
+
+    <!-- END EVENT -->
+    <endEvent id="EndEvent_1" name="Prozess beendet">
+      <incoming>Flow_2</incoming>
+    </endEvent>
+
+    <!-- SEQUENZFLÜSSE -->
+    <sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_HalloWelt"/>
+    <sequenceFlow id="Flow_2" sourceRef="Task_HalloWelt" targetRef="EndEvent_1"/>
+
+  </process>
+
+  <!-- DIAGRAM LAYOUT (für Cockpit-Ansicht) -->
+  <bpmndi:BPMNDiagram xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="hallo-welt-prozess">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="82" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="133" y="125" width="73" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HalloWelt_di" bpmnElement="Task_HalloWelt">
+        <dc:Bounds x="250" y="60" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
+        <dc:Bounds x="412" y="82" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="393" y="125" width="74" height="27"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="188" y="100"/><di:waypoint x="250" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="350" y="100"/><di:waypoint x="412" y="100"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</definitions>
