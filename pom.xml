@@ -159,6 +159,29 @@
             <artifactId>spring-boot-testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Camunda Spring Boot Starter (Engine + REST API) -->
+        <dependency>
+            <groupId>org.camunda.bpm.springboot</groupId>
+            <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
+            <version>7.21.0</version>
+        </dependency>
+
+        <!-- Camunda Cockpit + Tasklist Web UI (http://localhost:8080/camunda) -->
+        <dependency>
+            <groupId>org.camunda.bpm.springboot</groupId>
+            <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
+            <version>7.21.0</version>
+        </dependency>
+
+        <!-- H2 für lokale Entwicklung (Prozessdaten im Memory) -->
+        <!-- Für Produktion: PostgreSQL verwenden -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -167,40 +190,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
-<!--            <plugin>-->
-<!--                <groupId>org.openapitools</groupId>-->
-<!--                <artifactId>openapi-generator-maven-plugin</artifactId>-->
-<!--                <version>7.8.0</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>generate-ts-client</id>-->
-<!--                        <goals><goal>generate</goal></goals>-->
-<!--                        <configuration>-->
-<!--                            &lt;!&ndash; Wenn Backend lokal läuft &ndash;&gt;-->
-<!--                            <inputSpec>http://localhost:8082/v3/api-docs</inputSpec>-->
-<!--&lt;!&ndash;                            <inputSpec>${openapi.output.dir}/${openapi.output.file}</inputSpec>&ndash;&gt;-->
-<!--                            <generatorName>typescript-angular</generatorName>-->
-<!--&lt;!&ndash;                            <output>${ts.client.output}</output>&ndash;&gt;-->
-<!--                            <output>${project.basedir}/generated/ts-client</output>-->
-<!--                            <configOptions>-->
-<!--                                <ngVersion>17</ngVersion>-->
-<!--                                <stringEnums>true</stringEnums>-->
-<!--                                <modelPropertyNaming>camelCase</modelPropertyNaming>-->
-<!--                                <supportsES6>true</supportsES6>-->
-<!--                            </configOptions>-->
-<!--                            <additionalProperties>-->
-<!--                                npmName=@your-scope/control-api-->
-<!--                                npmVersion=0.1.0-->
-<!--                            </additionalProperties>-->
-<!--                            <globalProperties>-->
-<!--                                <models/>-->
-<!--                                <apis/>-->
-<!--                            </globalProperties>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
 
             <plugin>
                 <groupId>org.openapitools</groupId>
@@ -304,135 +293,5 @@
             </plugin>
         </plugins>
     </build>
-
-
-
-<!--    <profiles>-->
-<!--        &lt;!&ndash; lokal: App läuft auf 8082 &ndash;&gt;-->
-<!--        <profile>-->
-<!--            <id>openapi-gen-local</id>-->
-<!--            <properties>-->
-<!--                <openapi.url>http://localhost:8082/v3/api-docs</openapi.url>-->
-<!--                <ts.client.output>${project.basedir}/generated/ts-client</ts.client.output>-->
-<!--            </properties>-->
-<!--            <build>-->
-<!--                <plugins>-->
-<!--                    <plugin>-->
-<!--                        <groupId>org.openapitools</groupId>-->
-<!--                        <artifactId>openapi-generator-maven-plugin</artifactId>-->
-<!--                        <version>7.8.0</version>-->
-<!--                        <executions>-->
-
-<!--                            &lt;!&ndash; Java-Server: Interfaces + Modelle (keine fertigen Controller) &ndash;&gt;-->
-<!--                            <execution>-->
-<!--                                <id>generate-java-server</id>-->
-<!--                                <goals><goal>generate</goal></goals>-->
-<!--                                <phase>generate-sources</phase>-->
-<!--                                <configuration>-->
-<!--                                    <inputSpec>${openapi.spec.file}</inputSpec>-->
-<!--                                    <generatorName>spring</generatorName>-->
-<!--                                    <output>${openapi.server.output}</output>-->
-<!--                                    <apiPackage>${openapi.api.package}</apiPackage>-->
-<!--                                    <modelPackage>${openapi.model.package}</modelPackage>-->
-<!--                                    <configOptions>-->
-<!--                                        <useSpringBoot3>true</useSpringBoot3>-->
-<!--                                        <interfaceOnly>true</interfaceOnly>        &lt;!&ndash; nur Interfaces, du implementierst &ndash;&gt;-->
-<!--                                        <useTags>true</useTags>                     &lt;!&ndash; nach Tags gruppieren &ndash;&gt;-->
-<!--                                        <dateLibrary>java8</dateLibrary>-->
-<!--                                        <serializableModel>true</serializableModel>-->
-<!--                                    </configOptions>-->
-<!--                                </configuration>-->
-<!--                            </execution>-->
-
-<!--                            &lt;!&ndash; TypeScript-Client (Angular) &ndash;&gt;-->
-<!--                            <execution>-->
-<!--                                <id>generate-ts-client</id>-->
-<!--                                <goals><goal>generate</goal></goals>-->
-<!--                                <phase>verify</phase>-->
-<!--                                <configuration>-->
-<!--                                    <inputSpec>${openapi.spec.file}</inputSpec>-->
-<!--                                    <generatorName>typescript-angular</generatorName>-->
-<!--                                    <output>${ts.client.output}</output>-->
-<!--                                    <configOptions>-->
-<!--                                        <ngVersion>17</ngVersion>-->
-<!--                                        <stringEnums>true</stringEnums>-->
-<!--                                        <modelPropertyNaming>camelCase</modelPropertyNaming>-->
-<!--                                        <supportsES6>true</supportsES6>-->
-<!--                                    </configOptions>-->
-<!--                                    <globalProperties>-->
-<!--                                        <models/>-->
-<!--                                        <apis/>-->
-<!--                                    </globalProperties>-->
-<!--                                </configuration>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
-<!--                </plugins>-->
-<!--            </build>-->
-<!--        </profile>-->
-
-<!--        &lt;!&ndash; docker: App auf 8080 &ndash;&gt;-->
-<!--        <profile>-->
-<!--            <id>openapi-gen-docker</id>-->
-<!--            <properties>-->
-<!--                <openapi.url>http://localhost:8080/v3/api-docs</openapi.url>-->
-<!--                <ts.client.output>${project.basedir}/generated/ts-client</ts.client.output>-->
-<!--            </properties>-->
-<!--            <build>-->
-<!--                <plugins>-->
-<!--                    <plugin>-->
-<!--                        <groupId>org.openapitools</groupId>-->
-<!--                        <artifactId>openapi-generator-maven-plugin</artifactId>-->
-<!--                        <version>7.8.0</version>-->
-<!--                        <executions>-->
-
-<!--                            &lt;!&ndash; Java-Server: Interfaces + Modelle (keine fertigen Controller) &ndash;&gt;-->
-<!--                            <execution>-->
-<!--                                <id>generate-java-server</id>-->
-<!--                                <goals><goal>generate</goal></goals>-->
-<!--                                <phase>generate-sources</phase>-->
-<!--                                <configuration>-->
-<!--                                    <inputSpec>${openapi.spec.file}</inputSpec>-->
-<!--                                    <generatorName>spring</generatorName>-->
-<!--                                    <output>${openapi.server.output}</output>-->
-<!--                                    <apiPackage>${openapi.api.package}</apiPackage>-->
-<!--                                    <modelPackage>${openapi.model.package}</modelPackage>-->
-<!--                                    <configOptions>-->
-<!--                                        <useSpringBoot3>true</useSpringBoot3>-->
-<!--                                        <interfaceOnly>true</interfaceOnly>        &lt;!&ndash; nur Interfaces, du implementierst &ndash;&gt;-->
-<!--                                        <useTags>true</useTags>                     &lt;!&ndash; nach Tags gruppieren &ndash;&gt;-->
-<!--                                        <dateLibrary>java8</dateLibrary>-->
-<!--                                        <serializableModel>true</serializableModel>-->
-<!--                                    </configOptions>-->
-<!--                                </configuration>-->
-<!--                            </execution>-->
-
-<!--                            &lt;!&ndash; TypeScript-Client (Angular) &ndash;&gt;-->
-<!--                            <execution>-->
-<!--                                <id>generate-ts-client</id>-->
-<!--                                <goals><goal>generate</goal></goals>-->
-<!--                                <phase>verify</phase>-->
-<!--                                <configuration>-->
-<!--                                    <inputSpec>${openapi.spec.file}</inputSpec>-->
-<!--                                    <generatorName>typescript-angular</generatorName>-->
-<!--                                    <output>${ts.client.output}</output>-->
-<!--                                    <configOptions>-->
-<!--                                        <ngVersion>17</ngVersion>-->
-<!--                                        <stringEnums>true</stringEnums>-->
-<!--                                        <modelPropertyNaming>camelCase</modelPropertyNaming>-->
-<!--                                        <supportsES6>true</supportsES6>-->
-<!--                                    </configOptions>-->
-<!--                                    <globalProperties>-->
-<!--                                        <models/>-->
-<!--                                        <apis/>-->
-<!--                                    </globalProperties>-->
-<!--                                </configuration>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
-<!--                </plugins>-->
-<!--            </build>-->
-<!--        </profile>-->
-<!--    </profiles>-->
 
 </project>

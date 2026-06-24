@@ -1,12 +1,42 @@
 server:
   port: 8082
 
+
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: admin
+      first-name: Admin
+    filter:
+      create: All Tasks   # Zeigt alle Taks im Tasklist
+    webapp:
+      application-path: /camunda      # Cockpit erreichbar unter /camunda
+    auto-deployment-enabled: # BPMN-Datein aus resources/processes/ automatisch deployen
+
+
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    # H2 für lokale Entwicklung
+    url: jdbc:h2:mem:camunda;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
 
+  h2:
+    console:
+      enabled: true #H2-Konsole unter /h2-console
+
+# Logging für Camunda (optional, hilft beim Lernen)
+Logging:
+  level:
+    org.camunda: INFO
+    prg.camunda.bpm.engine: WARN
+
+
+    #url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT}/${DB_NAME}
+    #username: ${DB_USER}
+    #password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
